@@ -27,8 +27,13 @@
  (global
   )
 
- ;; Bindings for commands are usually only active in normal and visual state.
+ (motion
+  (":" "Swap" evil-repeat-find-char)
+  (";" "Swap" evil-ex))
+
+
  (normal|visual
+  ("<backspace>" "Switch to previous Buffer" corgi/switch-to-previous-buffer)
   ("SPC"
    ("0" "Select Treemacs" treemacs-select-window)
    ("f"

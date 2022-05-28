@@ -12,6 +12,10 @@
 ;; the code over to your `user-emacs-directory', load it with `load-file', and
 ;; edit it to your heart's content.
 
+(setq evil-want-C-u-scroll t)
+(setq evil-want-Y-yank-to-eol t)
+
+
 (let ((straight-current-profile 'corgi))
   ;; Change a bunch of Emacs defaults, from disabling the menubar and toolbar,
   ;; to fixing modifier keys on Mac and disabling the system bell.
@@ -70,6 +74,7 @@
 
 ;; Language-specific packages
 (use-package org)
+(require 'org-tempo)
 (use-package markdown-mode)
 (use-package yaml-mode)
 (use-package typescript-mode)
@@ -80,6 +85,7 @@
 
 ;; Color hex color codes so you can see the actual color.
 (use-package rainbow-mode)
+
 
 ;; A hierarchical file browser, included here as an example of how to set up
 ;; custom keys, see `user-keys.el' (visit it with `SPC f e k').
@@ -122,7 +128,7 @@
   (load-theme 'sanityinc-tomorrow-bright t))
 
 ;; Maybe set a nice font to go with it
-;; (set-frame-font "Iosevka Fixed SS14-14")
+(set-frame-font "Iosevka 22")
 
 ;; Enable our "connection indicator" for CIDER. This will add a colored marker
 ;; to the modeline for every REPL the current buffer is connected to, color
@@ -149,5 +155,33 @@
               (delete-trailing-whitespace))))
 
 ;; Enabling desktop-save-mode will save and restore all buffers between sessions
-(setq desktop-restore-frames nil)
-(desktop-save-mode 1)
+;; (setq desktop-restore-frames nil)
+;; (desktop-save-mode 1)
+
+(define-obsolete-variable-alias 'cider-default-repl-command 'cider-jack-in-default)
+(defcustom cider-jack-in-default (if (executable-find "clojure") 'clojure-cli 'lein)
+  "The default tool to use when doing `cider-jack-in' outside a project.
+This value will only be consulted when no identifying file types, i.e.
+project.clj for leiningen or build.boot for boot, could be found.
+
+As the Clojure CLI is bundled with Clojure itself, it's the default.
+In the absence of the Clojure CLI (e.g. on Windows), we fallback
+to Leiningen."
+  :type '(choice (const 'lein)
+                 (const 'boot)
+                 (const 'clojure-cli)
+                 (const 'shadow-cljs)
+                 (const 'gradle))
+  :group 'cider
+  :safe #'symbolp
+  :package-version '(cider . "0.9.0"))
+
+;; Adding esacpe from insert mode
+;; https://stackoverflow.com/a/13543550/4110233
+(use-package key-chord)
+(setq key-chord-two-keys-delay 0.3)
+(key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+(key-chord-mode 1)
+
+;; https://stackoverflow.com/a/12916499/4110233
+(define-key evil-ex-map "E" 'dired)
