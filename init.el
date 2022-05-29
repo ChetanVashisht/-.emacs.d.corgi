@@ -158,6 +158,13 @@
 ;; (setq desktop-restore-frames nil)
 ;; (desktop-save-mode 1)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;; User Defined Config ;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://stackoverflow.com/a/64281978/4110233
+(setq cider-lein-command "/Users/thechetan/bin/lein")
+
 (define-obsolete-variable-alias 'cider-default-repl-command 'cider-jack-in-default)
 (defcustom cider-jack-in-default (if (executable-find "clojure") 'clojure-cli 'lein)
   "The default tool to use when doing `cider-jack-in' outside a project.
@@ -184,4 +191,4 @@ to Leiningen."
 (key-chord-mode 1)
 
 ;; https://stackoverflow.com/a/12916499/4110233
-(define-key evil-ex-map "E" 'dired)
+(define-key evil-ex-map "E" 'find-file)
