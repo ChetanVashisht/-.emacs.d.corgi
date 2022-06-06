@@ -73,8 +73,6 @@
 (use-package magit)
 
 ;; Language-specific packages
-(use-package org)
-(require 'org-tempo)
 (use-package markdown-mode)
 (use-package yaml-mode)
 (use-package typescript-mode)
@@ -192,3 +190,77 @@ to Leiningen."
 
 ;; https://stackoverflow.com/a/12916499/4110233
 (define-key evil-ex-map "E" 'find-file)
+
+;; https://stackoverflow.com/a/40570659/4110233
+(define-key cider-repl-mode-map (kbd "<up>") 'cider-repl-previous-input)
+(define-key cider-repl-mode-map (kbd "<down>") 'cider-repl-next-input)
+(setq cider-repl-wrap-history t)
+(setq cider-repl-history-size 1000)
+(setq cider-repl-history-file "~/.cider-repl-history")
+(global-visual-line-mode t)
+
+(use-package evil-cleverparens
+  :after (evil smartparens)
+  :commands evil-cleverparens-mode
+  :init
+  (add-hook 'clojure-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
+  (setq evil-cleverparens-complete-parens-in-yanked-region t)
+  :config
+  (setq evil-cleverparens-use-s-and-S nil)
+  (evil-define-key '(normal visual) evil-cleverparens-mode-map
+    "s" nil
+    "S" nil
+    "{" nil
+    "}" nil
+    "[" nil
+    "]" nil
+    (kbd "<tab>") 'evil-jump-item))
+
+(use-package org
+                                        ; :hook (org-mode . efs/org-mode-setup)
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (clojure . t)))
+  (setq org-ellipsis "⤵")
+  (setq org-edit-src-content-indentation 0)
+  (setq org-startup-folded t)
+  (setq-default left-margin-width 10 right-margin-width 8) ; Define new widths.
+  (set-window-buffer nil (current-buffer)) ; Use them now.
+  (setq org-blank-before-new-entry t)
+  (setq-default line-spacing 6)
+  (setq org-babel-clojure-backend 'cider)
+  (setq org-confirm-babel-evaluate nil)
+  (require 'org-tempo)
+  (require 'cider)
+  (setq org-src-fontify-natively t)
+  (setq org-fontify-quote-and-verse-blocks t)
+  )
+
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-clojure.html
+
+;; C-x n s: Zoom into section
+;; C-x n b: Zoom into section
+;; C-x n w: Zoom out
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-quote ((t (:inherit org-block :extend nil :background "gray5" :foreground "firebrick3" :box (:line-width 1 :color "gray38" :style pressed-button) :slant normal :weight normal :width normal)))))
