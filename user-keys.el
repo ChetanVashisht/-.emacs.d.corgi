@@ -28,8 +28,9 @@
   )
 
  (motion
-  (":" "Swap" evil-repeat-find-char)
-  (";" "Swap" evil-ex))
+  (":" "Barf" sp-backward-barf-sexp)
+  ("F" "Slurp" sp-backward-slurp-sexp)
+  (";" "Execute" evil-ex))
 
 
  (normal|visual

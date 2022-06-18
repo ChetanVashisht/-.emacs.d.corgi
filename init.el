@@ -162,6 +162,8 @@
 
 ;; https://stackoverflow.com/a/64281978/4110233
 (setq cider-lein-command "/Users/thechetan/bin/lein")
+(setq cider-eval-result-prefix " ;;=> ")
+
 
 (define-obsolete-variable-alias 'cider-default-repl-command 'cider-jack-in-default)
 (defcustom cider-jack-in-default (if (executable-find "clojure") 'clojure-cli 'lein)
@@ -218,7 +220,6 @@ to Leiningen."
     (kbd "<tab>") 'evil-jump-item))
 
 (use-package org
-                                        ; :hook (org-mode . efs/org-mode-setup)
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -230,7 +231,7 @@ to Leiningen."
   (setq org-startup-folded t)
   (setq-default left-margin-width 10 right-margin-width 8) ; Define new widths.
   (set-window-buffer nil (current-buffer)) ; Use them now.
-  (setq org-blank-before-new-entry t)
+  (setq org-blank-before-new-entry nil)
   (setq-default line-spacing 6)
   (setq org-babel-clojure-backend 'cider)
   (setq org-confirm-babel-evaluate nil)
@@ -238,6 +239,17 @@ to Leiningen."
   (require 'cider)
   (setq org-src-fontify-natively t)
   (setq org-fontify-quote-and-verse-blocks t)
+  (setq org-startup-indented t)
+  (global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
+  (setq org-reverse-note-order t)
+  (setq org-todo-keywords
+        '((sequence "TODO" "IN-PROGRESS" "STUCK" "|" "DONE" "REJECTED")))
+  (setq org-refile-targets
+        '((nil :maxlevel . 3)
+          (org-agenda-files :maxlevel . 2)))
+  (setq org-capture-templates
+        '(("b" "Bills" entry (filename+headline "~/GTD/tasks.org" "Bills")
+           "* [ ] Internet\n* [ ] Electricity")))
   )
 
 
@@ -257,10 +269,35 @@ to Leiningen."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(cider-comment-postfix "")
+ '(cider-comment-prefix " ; ↪ ")
+ '(org-agenda-files
+   '("/Users/thechetan/org/tasks.org" "/Users/thechetan/org/clojure.org" "/Users/thechetan/org/projects.org" "/Users/thechetan/org/advice.org" "/Users/thechetan/org/reading.org" "/Users/thechetan/org/fitness.org" "/Users/thechetan/org/appliances.org" "/Users/thechetan/org/travel.org" "/Users/thechetan/org/home.org" "/Users/thechetan/org/hobbies.org" "/Users/thechetan/org/relationships.org"))
+ '(org-src-window-setup 'current-window))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-quote ((t (:inherit org-block :extend nil :background "gray5" :foreground "firebrick3" :box (:line-width 1 :color "gray38" :style pressed-button) :slant normal :weight normal :width normal)))))
+ '(org-document-info-keyword ((t (:foreground "#b9ca4a" :slant normal :width condensed))))
+ '(org-quote ((t (:inherit org-block :extend nil :background "gray10" :foreground "firebrick3" :slant normal :weight normal :width normal)))))
+(put 'narrow-to-region 'disabled nil)
+
+;; https://emacs.stackexchange.com/a/62403/30873
+(define-key cider-mode-map (kbd "C-c C-p")
+  (lambda ()
+    (interactive)
+    (let* ((insert-before nil)
+           (bounds (cider-last-sexp 'bounds))
+           (insertion-point (nth (if insert-before 0 1) bounds))
+           (comment-postfix (concat cider-comment-postfix
+                                    (if insert-before "\n" ""))))
+      (cider-interactive-eval (concat "(with-out-str " (cider-last-sexp) " )")
+                              (cider-eval-pprint-with-multiline-comment-handler
+                               (current-buffer)
+                               (set-marker (make-marker) insertion-point)
+                               cider-comment-prefix
+                               cider-comment-continued-prefix
+                               comment-postfix)
+                              bounds
+                              (cider--nrepl-print-request-map fill-column)))))
