@@ -25,12 +25,24 @@
  ;; "global" bindings are always active regardless of Evil's "state" (= vim mode)
  ;; If you don't provide this the default is `normal'.
  (global
+                                        ;("C-k" "Move to right split window" evil-window-up)
+                                        ;("C-j" "Move to down split window" evil-window-down)
+                                        ;("C-j" "Move to down split window" evil-window-down)
   )
 
  (motion
   (":" "Barf" sp-backward-barf-sexp)
   ("F" "Slurp" sp-backward-slurp-sexp)
+  ("{" "Barf" :sexp/barf-forward)
+  ("}" "Slurp" :sexp/slurp-forward)
   (";" "Execute" evil-ex))
+
+ (normal|visual
+  (">" "Right-shift" evil-shift-right)
+  ("<" "Left-shift" evil-shift-left)
+  ("k" "up" evil-previous-visual-line)
+  ("j" "down" evil-next-visual-line)
+  )
 
 
  (normal|visual
