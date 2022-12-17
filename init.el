@@ -643,16 +643,28 @@ to Leiningen."
                                  (cider-emit-interactive-eval-err-output err))
                                ()))
 
-(setq result-test-template "(testing \"Testing expressions\"
+(setq result-test-template "(testing \"Testing {testname}\"
 (is (= {res} {expr})))")
+
+(defun cgv/get-function-name (expr)
+  (progn
+    (string-match "^(\\([a-zA-Z0-9!?_-]+\\)" expr)
+    (match-string 1 expr)))
 
 (defun cgv/substitute-result (result)
   (let* ((quoted (replace-regexp-in-string "^(" "'(" result))
          (rep (replace-regexp-in-string "\{res\}" quoted result-test-template))
-         (out (replace-regexp-in-string "\{expr\}" (substring-no-properties (car kill-ring)) rep)))
+         (expr (substring-no-properties (car kill-ring)))
+         (fn-name (cgv/get-function-name expr))
+         (with-test-name (replace-regexp-in-string "\{testname\}" fn-name rep))
+         (out (replace-regexp-in-string "\{expr\}" expr with-test-name)))
     out))
 
 (global-set-key (kbd "C-c t") 'cgv/make-into-test)
 
 (global-unset-key (kbd "C-q"))
 (define-key evil-normal-state-map (kbd "C-q") 'evil-jump-forward)
+;; Limelight mode in vim equivalent
+;; Checkout hl-mode with hl-line-range-function
+
+(beacon-mode)
