@@ -210,8 +210,7 @@ to Leiningen."
 (use-package key-chord)
 (setq key-chord-two-keys-delay 0.3)
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
-(key-chord-define evil-insert-state-map "hh" 'evil-backward-char)
-(key-chord-define evil-insert-state-map "ll" 'evil-forward-char)
+(key-chord-define evil-insert-state-map ";;" 'evil-forward-char)
 (key-chord-define evil-normal-state-map "fh" 'evil-window-left)
 (key-chord-define evil-normal-state-map "fl" 'evil-window-right)
 (key-chord-define evil-normal-state-map "fk" 'evil-window-up)
@@ -646,6 +645,13 @@ to Leiningen."
 (setq result-test-template "(testing \"Testing {testname}\"
 (is (= {res} {expr})))")
 
+(setq result-test-template-2 "(is (= {res} {expr}))")
+
+;; (defun cgv/expr-testing? ()
+;;   (interactive)
+;;   (let ((s (sexp-at-point)))
+;;     (message s))
+
 (defun cgv/get-function-name (expr)
   (progn
     (string-match "^(\\([a-zA-Z0-9!?_-]+\\)" expr)
@@ -664,7 +670,17 @@ to Leiningen."
 
 (global-unset-key (kbd "C-q"))
 (define-key evil-normal-state-map (kbd "C-q") 'evil-jump-forward)
+
+
 ;; Limelight mode in vim equivalent
 ;; Checkout hl-mode with hl-line-range-function
 
+;; For blinking cursor on switching windows
 (beacon-mode)
+
+;; For <C-v> to paste globally
+(cua-mode)
+
+
+(load-file (expand-file-name "hide-comnt.el" user-emacs-directory))
+(require 'hide-comnt)
