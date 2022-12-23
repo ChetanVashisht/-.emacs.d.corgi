@@ -203,7 +203,8 @@ to Leiningen."
     "}" nil
     "[" nil
     "]" nil
-    (kbd "<tab>") 'evil-jump-item))
+    (kbd "<tab>") 'evil-toggle-fold)
+  )
 
 ;; Adding esacpe from insert mode
 ;; https://stackoverflow.com/a/13543550/4110233
@@ -684,3 +685,5 @@ to Leiningen."
 
 (load-file (expand-file-name "hide-comnt.el" user-emacs-directory))
 (require 'hide-comnt)
+
+(setq cider-save-file-on-load t)
