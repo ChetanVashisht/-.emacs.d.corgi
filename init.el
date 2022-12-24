@@ -578,20 +578,7 @@ to Leiningen."
 ;; (add-hook 'clojure-mode-hook #'lsp-deferred)
 ;; (add-hook 'emacs-lisp-mode-hook #'lsp-deferred)
 
-(require 'clj-refactor)
-
-(defun my-clojure-mode-hook ()
-  (clj-refactor-mode 1)
-  (yas-minor-mode 1) ; for adding require/use/import statements
-  ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-  (cljr-add-keybindings-with-prefix "C-c C-m")
-  (hs-minor-mode)
-  (eldoc-mode)
-  ;; https://emacs.stackexchange.com/questions/18561/display-function-arguments-in-echo-area
-  )
-
-(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
-
+;; This is to copy the $PATH from zshrc and bashrc to eshell
 (exec-path-from-shell-initialize)
 
 (use-package lsp-mode
@@ -605,26 +592,35 @@ to Leiningen."
 
 (setq cljr-warn-on-eval nil)
 
+;; No need for the <CMD> key, well use ctrl instead
+;; The only problem comes from paste that is solved by cua mode
 (setq mac-command-modifier 'control)
+(cua-mode)
 
+;; For blinking cursor on switching windows
+(beacon-mode)
+
+;; This displays quotes when the repl is stationary
 (omni-quotes-mode t)
 
+
+;; These are to make test generation
 (defun cgv/make-into-test ()
   ;; Need to hijack:
   ;; (defun cider-eval-last-sexp-and-replace ())
   "Evaluate the expression preceding point and replace it with its result."
-  (interactive)
-  (let ((last-sexp (cider-last-sexp)))
-    ;; we have to be sure the evaluation won't result in an error
-    (cider-nrepl-sync-request:eval last-sexp)
-    ;; seems like the sexp is valid, so we can safely kill it
-    (let ((opoint (point)))
-      (clojure-backward-logical-sexp)
-      (kill-region (point) opoint))
-    (cider-interactive-eval last-sexp
-                            (cgv/cider-eval-print-handler)
-                            nil
-                            (cider--nrepl-pr-request-map))))
+  ((interactive)
+   (let ((last-sexp (cider-last-sexp)))
+     ;; we have to be sure the evaluation won't result in an error
+     (cider-nrepl-sync-request:eval last-sexp)
+     ;; seems like the sexp is valid, so we can safely kill it
+     (let ((opoint (point)))
+       (clojure-backward-logical-sexp)
+       (kill-region (point) opoint))
+     (cider-interactive-eval last-sexp
+                             (cgv/cider-eval-print-handler)
+                             nil
+                             (cider--nrepl-pr-request-map)))))
 
 (defun cgv/cider-eval-print-handler (&optional buffer)
   "Make a handler for evaluating and printing result in BUFFER."
@@ -648,11 +644,6 @@ to Leiningen."
 
 (setq result-test-template-2 "(is (= {res} {expr}))")
 
-;; (defun cgv/expr-testing? ()
-;;   (interactive)
-;;   (let ((s (sexp-at-point)))
-;;     (message s))
-
 (defun cgv/get-function-name (expr)
   (progn
     (string-match "^(\\([a-zA-Z0-9!?_-]+\\)" expr)
@@ -669,21 +660,49 @@ to Leiningen."
 
 (global-set-key (kbd "C-c t") 'cgv/make-into-test)
 
+;; Use <C-q> and <C-o> to move forward and backwards in code navigation
 (global-unset-key (kbd "C-q"))
 (define-key evil-normal-state-map (kbd "C-q") 'evil-jump-forward)
 
 
-;; Limelight mode in vim equivalent
-;; Checkout hl-mode with hl-line-range-function
-
-;; For blinking cursor on switching windows
-(beacon-mode)
-
-;; For <C-v> to paste globally
-(cua-mode)
-
-
-(load-file (expand-file-name "hide-comnt.el" user-emacs-directory))
-(require 'hide-comnt)
-
+;; So that emacs saves the file when evaluating the buffer
 (setq cider-save-file-on-load t)
+
+;; These functions are to toggle fold all comments by default on clojure file startup
+(defun cgv/hide-comments ()
+  (let ((s (cider-sexp-at-point)))
+    (if (and (not (null s)) (string= (cgv/get-function-name s) "comment"))
+        (progn
+          (evil-cp-backward-sexp)
+          (evil-toggle-fold)
+          (backward-up-list)
+          (forward-sexp)))
+    (forward-sexp)))
+
+(defun are-we-still-commenting? (current-line)
+  (cgv/hide-comments)
+  (if (not (= current-line (line-number-at-pos)))
+      (progn
+        (cgv/hide-comments)
+        (are-we-still-commenting? (line-number-at-pos)))
+    nil))
+
+(defun cgv/toggle-fold-comments-in-buffer ()
+  (interactive)
+  (goto-line 1)
+  (are-we-still-commenting? 1)
+  (goto-line 1))
+
+(require 'clj-refactor)
+
+(defun my-clojure-mode-hook ()
+  (clj-refactor-mode 1)
+  (yas-minor-mode 1) ; for adding require/use/import statements
+  ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+  (cljr-add-keybindings-with-prefix "C-c C-m")
+  (hs-minor-mode)
+  (eldoc-mode)
+  ;; https://emacs.stackexchange.com/questions/18561/display-function-arguments-in-echo-area
+  )
+
+(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
