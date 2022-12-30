@@ -558,6 +558,7 @@ to Leiningen."
 (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
 
 (setq-default left-margin-width 10)
 (setq-default line-spacing 0.25)
@@ -706,3 +707,30 @@ to Leiningen."
   )
 
 (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
+
+(defun my-sh-send-command (command)
+  "Send COMMAND to current shell process.
+    Creates new shell process if none exists.
+    See URL `https://stackoverflow.com/a/7053298/5065796'"
+  (let ((proc (get-process "shell"))
+        pbuf)
+    (unless proc
+      (let ((currbuff (current-buffer)))
+        (shell)
+        (switch-to-buffer currbuff)
+        (setq proc (get-process "shell"))
+        ))
+    (setq pbuff (process-buffer proc))
+    (setq command-and-go (concat command "\n"))
+    (with-current-buffer pbuff
+      (goto-char (process-mark proc))
+      (insert command-and-go)
+      (move-marker (process-mark proc) (point))
+      )
+    (process-send-string proc command-and-go)))
+
+
+(defun cgv/open-site-changes ()
+  (interactive)
+  (my-sh-send-command "cd ~/react/1-static-react-site/ && npm run run")
+  (browse-url--browser "http://localhost:3000/"))
