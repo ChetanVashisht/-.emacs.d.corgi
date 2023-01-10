@@ -212,6 +212,7 @@ to Leiningen."
 (setq key-chord-two-keys-delay 0.3)
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
 (key-chord-define evil-insert-state-map ";;" 'evil-forward-char)
+(key-chord-define evil-insert-state-map "OO" 'evil-open-above)
 (key-chord-define evil-normal-state-map "fh" 'evil-window-left)
 (key-chord-define evil-normal-state-map "fl" 'evil-window-right)
 (key-chord-define evil-normal-state-map "fk" 'evil-window-up)
@@ -557,7 +558,7 @@ to Leiningen."
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
 
 (setq-default left-margin-width 10)
@@ -571,7 +572,10 @@ to Leiningen."
   (js2-mode . (lambda () (setq-local dash-docs-docsets '("HTML" "CSS" "JavaScript")))))
 
 (add-hook 'js2-mode-hook #'lsp-deferred)
+(add-hook 'js-mode #'lsp-deferred)
+(add-hook 'web-mode-mode #'evil-cleverparens-mode)
 (add-hook 'web-mode-hook #'lsp-deferred)
+(add-hook 'web-mode-hook #'aggressive-indent-mode)
 (add-hook 'python-mode #'lsp-deferred)
 
 (add-hook 'js2-mode-hook #'yas-minor-mode-on)
@@ -722,11 +726,11 @@ to Leiningen."
         ))
     (setq pbuff (process-buffer proc))
     (setq command-and-go (concat command "\n"))
+    (with-current-buffer pbuff (comint-interrupt-subjob))
     (with-current-buffer pbuff
       (goto-char (process-mark proc))
       (insert command-and-go)
-      (move-marker (process-mark proc) (point))
-      )
+      (move-marker (process-mark proc) (point)))
     (process-send-string proc command-and-go)))
 
 
@@ -734,3 +738,15 @@ to Leiningen."
   (interactive)
   (my-sh-send-command "cd ~/react/1-static-react-site/ && npm run run")
   (browse-url--browser "http://localhost:3000/"))
+
+;;(define-key evil-normal-state-map (kbd "C-c r") 'cgv/open-site-changes)
+(put 'erase-buffer 'disabled nil)
+
+(defun cgv/open-brackets-properly ()
+  (interactive)
+  (newline)
+  (newline)
+  (evil-previous-line)
+  (evil-insert))
+
+(define-key evil-insert-state-map (kbd "M-RET") 'cgv/open-brackets-properly)
