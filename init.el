@@ -475,7 +475,6 @@ to Leiningen."
          (out3 (replace-regexp-in-string "\{source\}" url out2)))
     out3))
 
-                                        ;(cgv/replace-in-template course-template "hello" "url" )
                                         ;(cgv/replace-in-creator-template course-template "hello" "url" "ins")
 
 (setq article-template "#+TITLE: {title}
@@ -495,8 +494,7 @@ to Leiningen."
          (article-title (cgv/replace-spaces page-title))
          (path "~/GTD/articles/")
          (filename (concat article-title ".org"))
-         (substituted-template (cgv/replace-in-template article-template article-title url))
-         )
+         (substituted-template (cgv/replace-in-template article-template article-title url)))
     (print url)
     (print page-title)
     (print article-title)
@@ -750,3 +748,44 @@ to Leiningen."
   (evil-insert))
 
 (define-key evil-insert-state-map (kbd "M-RET") 'cgv/open-brackets-properly)
+
+
+(defun cgv/matches (matcher path)
+  (let* ((m (cl-search matcher path)))
+    (not (null m))))
+
+;; (cl-search ".emacsxz" (file-name-directory buffer-file-name))
+;; (cgv/matches ".emacs" (file-name-directory buffer-file-name))
+;; (cgv/matches ".emacsz" (file-name-directory buffer-file-name))
+
+
+(defun cgv/get-path-to-components ()
+  (let* ((current-path (file-name-directory buffer-file-name)))
+    (cond
+     ((cgv/matches "/components/" current-path) current-path)
+     ((cgv/matches "/assets/" current-path) (replace-regexp-in-string "/assets/" "/components/" current-path))
+     ((cgv/matches "/src/" current-path) (concat current-path "components/"))
+     (t (concat current-path "src/components/")))))
+
+(setq default-component-content
+      "import React from 'react'
+
+export default function componentName() {
+    return (
+        <div>
+
+        </div>
+    )
+}")
+
+(defun cgv/create-jsx-component ()
+  (interactive)
+  (let* ((component-name (read-string "Component Name:"))
+         (path (cgv/get-path-to-components))
+         (content (replace-regexp-in-string "componentName" component-name default-component-content))
+         (filename (concat component-name ".jsx")))
+    (find-file (concat path filename))
+    (with-current-buffer filename (insert content))
+    (evil-previous-line 3)
+    (evil-insert)
+    ))
