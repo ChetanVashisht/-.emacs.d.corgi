@@ -318,6 +318,7 @@ to Leiningen."
  ;; If there is more than one, they won't work right.
  '(cider-comment-postfix "")
  '(cider-comment-prefix ";; ↪ ")
+ '(evil-search-module 'evil-search)
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files
    '("~/GTD/cooking.org" "~/GTD/articles/" "~/GTD/journal" "~/GTD/explore.org" "~/GTD/goals.org" "~/GTD/reading" "~/GTD/tasks.org" "~/GTD/software.org" "~/GTD/fitness.org" "~/GTD/appliances.org" "~/GTD/travel.org" "~/GTD/home.org" "~/GTD/hobbies.org" "~/GTD/coaching.org" "~/GTD/random.org" "~/GTD/relationships.org"))
@@ -328,6 +329,7 @@ to Leiningen."
  '(org-journal-file-format "%Y-%m-%V.org")
  '(org-journal-file-type 'weekly)
  '(org-src-window-setup 'current-window)
+ '(python-shell-interpreter "ipython")
  '(safe-local-variable-values
    '((eval font-lock-add-keywords nil
            `((,(concat "("
@@ -366,9 +368,10 @@ to Leiningen."
  '(org-block-end-line ((t (:extend nil :background "#000000" :foreground "gray54" :slant italic :weight ultra-light :height 1.0 :width condensed))))
  '(org-code ((t (:foreground "brown1"))))
  '(org-date ((t (:foreground "Brown" :overline nil :underline t))))
+ '(org-default ((t (:inherit default :foreground "dark gray"))))
  '(org-document-info-keyword ((t (:foreground "#b9ca4a" :slant normal :width condensed))))
  '(org-document-title ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande" :height 2.0 :underline nil))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande" :foregorund "blue"))))
+ '(org-level-1 ((t (:inherit default :extend nil :foreground "tomato1" :slant normal :weight bold :height 220 :width normal :foundry "nil" :family "Lucida Grande"))))
  '(org-level-2 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
  '(org-level-3 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
  '(org-level-4 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
