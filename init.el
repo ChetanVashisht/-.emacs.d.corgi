@@ -321,7 +321,7 @@ to Leiningen."
  '(evil-search-module 'evil-search)
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files
-   '("~/GTD/cooking.org" "~/GTD/articles/" "~/GTD/journal" "~/GTD/explore.org" "~/GTD/goals.org" "~/GTD/reading" "~/GTD/tasks.org" "~/GTD/software.org" "~/GTD/fitness.org" "~/GTD/appliances.org" "~/GTD/travel.org" "~/GTD/home.org" "~/GTD/hobbies.org" "~/GTD/coaching.org" "~/GTD/random.org" "~/GTD/relationships.org"))
+   '("~/GTD/cooking.org" "~/GTD/articles/" "~/GTD/journal" "~/GTD/explore.org" "~/GTD/goals.org" "~/GTD/reading" "~/GTD/tasks.org" "~/GTD/software.org" "~/GTD/fitness.org" "~/GTD/appliances.org" "~/GTD/travel.org" "~/GTD/home.org" "~/GTD/hobbies.org" "~/GTD/coaching.org" "~/GTD/random.org" "~/GTD/relationships.org" "~/GTD/interviews.org"))
  '(org-fontify-emphasized-text t)
  '(org-fontify-whole-block-delimiter-line nil)
  '(org-journal-date-format "<%Y-%m-%d %a>")
