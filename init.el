@@ -306,6 +306,11 @@ to Leiningen."
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
+(defun cgv/org-insert-new-same-level ()
+  (if (= nil (org-insert-item))
+      (org-insert-heading-respect-content)))
+
+(define-key evil-insert-state-map (kbd "C-RET") 'cgv/org-insert-new-same-level)
 ;; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-clojure.html
 
 ;; C-x n s: Zoom into section
@@ -561,6 +566,8 @@ to Leiningen."
 (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+(setq js2-strict-missing-semi-warning nil)
+(setq js2-missing-semi-one-line-override nil)
 
 (setq-default left-margin-width 10)
 (setq-default line-spacing 0.25)
@@ -569,17 +576,19 @@ to Leiningen."
   :hook
   ;; (python-mode . (lambda () (setq-local helm-dash-docsets '("Python_3"))))
   ;; (emacs-lisp-mode . (lambda () (setq-local helm-dash-docsets '("Emacs_lisp"))))
-  (web-mode . (lambda () (setq-local dash-docs-docsets '("HTML" "CSS" "JavaScript"))))
-  (js2-mode . (lambda () (setq-local dash-docs-docsets '("HTML" "CSS" "JavaScript")))))
+  (web-mode . (lambda () (setq-local dash-docs-docsets '("HTML" "CSS" "JavaScript")))))
 
-(add-hook 'js2-mode-hook #'lsp-deferred)
-(add-hook 'js-mode #'lsp-deferred)
 (add-hook 'web-mode-mode #'evil-cleverparens-mode)
 (add-hook 'web-mode-hook #'lsp-deferred)
 (add-hook 'web-mode-hook #'aggressive-indent-mode)
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "jsx" web-mode-content-type)
+              (js2-minor-mode t)
+              (js2-refactor-mode t))))
+;; https://github.com/dmvianna/dot-emacs/blob/c7e16a9e970c838898e2bf6579a75286930b8d82/dotfiles/javascript-config.el
 (add-hook 'python-mode #'lsp-deferred)
 
-(add-hook 'js2-mode-hook #'yas-minor-mode-on)
 (add-hook 'web-mode-hook #'yas-minor-mode-on)
 ;; (add-hook 'clojure-mode-hook #'lsp-deferred)
 ;; (add-hook 'emacs-lisp-mode-hook #'lsp-deferred)
@@ -608,6 +617,7 @@ to Leiningen."
 
 ;; This displays quotes when the repl is stationary
 (omni-quotes-mode t)
+(omni-quotes-load-simple-quote-file "~/GTD/quotes" "quotes")
 
 
 ;; These are to make test generation
@@ -750,7 +760,7 @@ to Leiningen."
   (evil-previous-line)
   (evil-insert))
 
-(define-key evil-insert-state-map (kbd "M-RET") 'cgv/open-brackets-properly)
+;; (define-key evil-insert-state-map (kbd "M-RET") 'cgv/open-brackets-properly)
 
 
 (defun cgv/matches (matcher path)
@@ -792,3 +802,23 @@ export default function componentName() {
     (evil-previous-line 3)
     (evil-insert)
     ))
+
+;; (use-package auto-virtualenv
+;;   :ensure t
+;;   :init
+;;   (use-package pyvenv
+;;     :ensure t)
+;;   :config
+;;   (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
+;;   )
+
+;; https://emacs.stackexchange.com/a/9584
+;(global-superword-mode t)
+
+                                        ;(modify-syntax-entry ?_ "w")
+                                        ;(modify-syntax-entry ?- "w")
+(with-eval-after-load 'evil
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; make evil-search-word look for symbol rather than word boundaries
+  (setq-default evil-symbol-word-search t))
