@@ -269,10 +269,6 @@ to Leiningen."
            "* [ ] Internet\n* [ ] Electricity")))
 
   ;; https://zzamboni.org/post/beautifying-org-mode-in-emacs/
-  (custom-theme-set-faces
-   'user
-   '(variable-pitch ((t (:family "ETBembo" :height 200 :weight medium))))
-   '(fixed-pitch ((t ( :family "Fira Code Retina" :height 160)))))
   )
 (add-hook 'org-mode-hook 'variable-pitch-mode)
 (add-hook 'org-mode-hook 'visual-fill-column-mode)
@@ -428,7 +424,7 @@ to Leiningen."
   (buffer-face-mode))
 
 ;; Set default font faces for Info and ERC modes
-(add-hook 'org-mode-hook 'my-buffer-face-mode-fixed)
+;; (add-hook 'org-mode-hook 'my-buffer-face-mode-fixed)
 ;;(add-hook 'Info-mode-hook 'my-buffer-face-mode-variable)
 
 ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2010-07/msg00291.html
