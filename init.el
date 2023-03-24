@@ -247,7 +247,6 @@ to Leiningen."
   (require 'cider)
   (require 'org-journal)
   (require 'key-chord)
-  (require 'org-habit)
   (setq org-src-fontify-natively t)
   (setq org-hide-emphasis-markers t)
   (setq org-agenda-log-mode-items '(closed clock state))
@@ -264,15 +263,11 @@ to Leiningen."
   (setq org-refile-targets
         '((nil :maxlevel . 3)
           (org-agenda-files :maxlevel . 1)))
-  (setq org-capture-templates
-        '(("b" "Bills" entry (filename+headline "~/GTD/tasks.org" "Bills")
-           "* [ ] Internet\n* [ ] Electricity")))
-
-  ;; https://zzamboni.org/post/beautifying-org-mode-in-emacs/
   )
-(add-hook 'org-mode-hook 'variable-pitch-mode)
 (add-hook 'org-mode-hook 'visual-fill-column-mode)
 (setq-default visual-fill-column-center-text t)
+
+(add-hook 'org-mode-hook (lambda () (buffer-face-set 'org-default)))
 
 (use-package org-bullets
   :after org
@@ -280,11 +275,6 @@ to Leiningen."
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(defun cgv/org-insert-new-same-level ()
-  (if (= nil (org-insert-item))
-      (org-insert-heading-respect-content)))
-
-(define-key evil-insert-state-map (kbd "C-RET") 'cgv/org-insert-new-same-level)
 ;; https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-clojure.html
 
 ;; C-x n s: Zoom into section
@@ -342,6 +332,7 @@ to Leiningen."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#000000" :foreground "systemBrownColor" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 220 :width normal :foundry "nil" :family "Iosevka"))))
  '(fixed-pitch ((t (:family "Fira Code Retina" :height 160))))
  '(org-block ((t (:extend t :background "#151515151515" :family "Monospace"))))
  '(org-block-begin-line ((t (:extend nil :background "gray0" :foreground "gray54" :slant italic :weight ultra-light :height 1.0 :width condensed))))
@@ -359,44 +350,29 @@ to Leiningen."
  '(org-level-6 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
  '(org-level-7 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
  '(org-level-8 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
- '(org-quote ((t (:inherit org-block :extend nil :background "gray0" :foreground "thistle4" :slant normal :weight normal :width normal :foundry "sans" :family "serif"))))
+ '(org-quote ((t (:inherit org-block :extend nil :background "gray0" :foreground "thistle4" :slant normal :weight normal :width normal :foundry "sans"))))
  '(org-table ((t (:foreground "#c397d8" :family "Monospace"))))
  '(variable-pitch ((t (:family "ETBembo" :height 200 :weight medium)))))
 (put 'narrow-to-region 'disabled nil)
 
 ;; https://emacs.stackexchange.com/a/62403/30873
 (define-key cider-mode-map (kbd "C-c C-p")
-  (lambda ()
-    (interactive)
-    (let* ((insert-before nil)
-           (bounds (cider-last-sexp 'bounds))
-           (insertion-point (nth (if insert-before 0 1) bounds))
-           (comment-postfix (concat cider-comment-postfix
-                                    (if insert-before "\n" ""))))
-      (cider-interactive-eval (concat "(with-out-str " (cider-last-sexp) " )")
-                              (cider-eval-pprint-with-multiline-comment-handler
-                               (current-buffer)
-                               (set-marker (make-marker) insertion-point)
-                               cider-comment-prefix
-                               cider-comment-continued-prefix
-                               comment-postfix)
-                              bounds
-                              (cider--nrepl-print-request-map fill-column)))))
-
-
-(add-hook 'org-font-lock-hook #'aj/org-indent-quotes)
-
-;; https://emacs.stackexchange.com/a/44153/30873
-(defun aj/org-indent-quotes (limit)
-  (let ((case-fold-search t))
-    (while (search-forward-regexp "^[ \t]*#\\+begin_quote" limit t)
-      (let ((beg (1+ (match-end 0))))
-        ;; on purpose, we look further than LIMIT
-        (when (search-forward-regexp "^[ \t]*#\\+end_quote" nil t)
-          (let ((end (1- (match-beginning 0)))
-                (indent (propertize "    " 'face 'org-hide)))
-            (add-text-properties beg end (list 'line-prefix indent
-                                               'wrap-prefix indent))))))))
+            (lambda ()
+              (interactive)
+              (let* ((insert-before nil)
+                     (bounds (cider-last-sexp 'bounds))
+                     (insertion-point (nth (if insert-before 0 1) bounds))
+                     (comment-postfix (concat cider-comment-postfix
+                                              (if insert-before "\n" ""))))
+                (cider-interactive-eval (concat "(with-out-str " (cider-last-sexp) " )")
+                                        (cider-eval-pprint-with-multiline-comment-handler
+                                         (current-buffer)
+                                         (set-marker (make-marker) insertion-point)
+                                         cider-comment-prefix
+                                         cider-comment-continued-prefix
+                                         comment-postfix)
+                                        bounds
+                                        (cider--nrepl-print-request-map fill-column)))))
 
 
 ;; https://www.reddit.com/r/emacs/comments/9oylrh/comment/e7xob8l/
@@ -410,22 +386,22 @@ to Leiningen."
 (package-initialize)
 
 ;; Use variable width font faces in current buffer
-(defun my-buffer-face-mode-variable ()
-  "Set font to a variable width (proportional) fonts in current buffer"
-  (interactive)
-  (setq buffer-face-mode-face '(:family "sans-serif" :height 100 :size 25))
-  (buffer-face-mode))
+;; (defun my-buffer-face-mode-variable ()
+;;   "Set font to a variable width (proportional) fonts in current buffer"
+;;   (interactive)
+;;   (setq buffer-face-mode-face '(:family "sans-serif" :height 100 :size 25))
+;;   (buffer-face-mode))
 
-;; Use monospaced font faces in current buffer
-(defun my-buffer-face-mode-fixed ()
-  "Sets a fixed width (monospace) font in current buffer"
-  (interactive)
-  (setq buffer-face-mode-face '(:family "Inconsolata" :height 100 :size 25))
-  (buffer-face-mode))
+;; ;; Use monospaced font faces in current buffer
+;; (defun my-buffer-face-mode-fixed ()
+;;   "Sets a fixed width (monospace) font in current buffer"
+;;   (interactive)
+;;   (setq buffer-face-mode-face '(:family "Inconsolata" :height 100 :size 25))
+;;   (buffer-face-mode))
 
 ;; Set default font faces for Info and ERC modes
 ;; (add-hook 'org-mode-hook 'my-buffer-face-mode-fixed)
-;;(add-hook 'Info-mode-hook 'my-buffer-face-mode-variable)
+;; (add-hook 'Info-mode-hook 'my-buffer-face-mode-variable)
 
 ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2010-07/msg00291.html
 ;; (cgv/www-get-page-title "https://www.reddit.com/r/emacs/comments/jtoomj/org_docs_get_title/")
@@ -566,8 +542,6 @@ to Leiningen."
 (add-hook 'python-mode #'lsp-deferred)
 
 (add-hook 'web-mode-hook #'yas-minor-mode-on)
-;; (add-hook 'clojure-mode-hook #'lsp-deferred)
-;; (add-hook 'emacs-lisp-mode-hook #'lsp-deferred)
 
 ;; This is to copy the $PATH from zshrc and bashrc to eshell
 (exec-path-from-shell-initialize)
@@ -779,22 +753,13 @@ export default function componentName() {
     (evil-insert)
     ))
 
-;; (use-package auto-virtualenv
-;;   :ensure t
-;;   :init
-;;   (use-package pyvenv
-;;     :ensure t)
-;;   :config
-;;   (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
-;;   )
-
 ;; https://emacs.stackexchange.com/a/9584
-;(global-superword-mode t)
-
-                                        ;(modify-syntax-entry ?_ "w")
-                                        ;(modify-syntax-entry ?- "w")
 (with-eval-after-load 'evil
-  (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t))
+
+(defun cgv/org-insert-new-same-level ()
+  (if (= nil (org-insert-item))
+      (org-insert-heading-respect-content)))
+
+(define-key evil-insert-state-map (kbd "C-RET") 'cgv/org-insert-new-same-level)
