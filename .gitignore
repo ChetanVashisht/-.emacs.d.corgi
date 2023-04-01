@@ -10,3 +10,8 @@ recentf
 straight/
 transient/
 .cache
+.lsp-session-v1
+comment-folding.el
+elpa/
+smex-items
+var/
