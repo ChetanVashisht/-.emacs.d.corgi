@@ -341,7 +341,7 @@ to Leiningen."
  '(org-date ((t (:foreground "Brown" :overline nil :underline t))))
  '(org-default ((t (:inherit default :foreground "dark gray"))))
  '(org-document-info-keyword ((t (:foreground "#b9ca4a" :slant normal :width condensed))))
- '(org-document-title ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande" :height 2.0 :underline nil))))
+ '(org-document-title ((t (:inherit default :foreground "#eaeaea" :underline nil :slant normal :weight bold :height 1.5 :width normal :foundry "nil" :family "Lucida Grande"))))
  '(org-level-1 ((t (:inherit default :extend nil :foreground "tomato1" :slant normal :weight bold :height 220 :width normal :foundry "nil" :family "Lucida Grande"))))
  '(org-level-2 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
  '(org-level-3 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
@@ -763,3 +763,6 @@ export default function componentName() {
       (org-insert-heading-respect-content)))
 
 (define-key evil-insert-state-map (kbd "C-RET") 'cgv/org-insert-new-same-level)
+
+(load-file (expand-file-name "comment-folding.el" user-emacs-directory))
+(require 'comment-folding)
