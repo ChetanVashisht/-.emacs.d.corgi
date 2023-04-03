@@ -337,7 +337,7 @@ to Leiningen."
  '(org-block ((t (:extend t :background "#151515151515" :family "Monospace"))))
  '(org-block-begin-line ((t (:extend nil :background "gray0" :foreground "gray54" :slant italic :weight ultra-light :height 1.0 :width condensed))))
  '(org-block-end-line ((t (:extend nil :background "#000000" :foreground "gray54" :slant italic :weight ultra-light :height 1.0 :width condensed))))
- '(org-code ((t (:foreground "brown1"))))
+ '(org-code ((t (:inherit shadow :background "#222222" :foreground "systemRedColor" :box (:line-width (2 . 2) :color "systemOrangeColor" :style pressed-button)))))
  '(org-date ((t (:foreground "Brown" :overline nil :underline t))))
  '(org-default ((t (:inherit default :foreground "dark gray"))))
  '(org-document-info-keyword ((t (:foreground "#b9ca4a" :slant normal :width condensed))))
@@ -352,6 +352,7 @@ to Leiningen."
  '(org-level-8 ((t (:inherit default :weight bold :foreground "#eaeaea" :font "Lucida Grande"))))
  '(org-quote ((t (:inherit org-block :extend nil :background "gray0" :foreground "thistle4" :slant normal :weight normal :width normal :foundry "sans"))))
  '(org-table ((t (:foreground "#c397d8" :family "Monospace"))))
+ '(org-verbatim ((t (:inherit shadow :background "#222222" :foreground "systemRedColor" :box (:line-width (2 . 2) :color "systemOrangeColor" :style pressed-button)))))
  '(variable-pitch ((t (:family "ETBembo" :height 200 :weight medium)))))
 (put 'narrow-to-region 'disabled nil)
 
