@@ -764,6 +764,3 @@ export default function componentName() {
       (org-insert-heading-respect-content)))
 
 (define-key evil-insert-state-map (kbd "C-RET") 'cgv/org-insert-new-same-level)
-
-(load-file (expand-file-name "comment-folding.el" user-emacs-directory))
-(require 'comment-folding)
