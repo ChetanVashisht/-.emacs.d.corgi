@@ -764,3 +764,7 @@ export default function componentName() {
       (org-insert-heading-respect-content)))
 
 (define-key evil-insert-state-map (kbd "C-RET") 'cgv/org-insert-new-same-level)
+
+;; https://github.com/Malabarba/aggressive-indent-mode/issues/127#issuecomment-504803167
+(add-to-list 'aggressive-indent-dont-indent-if
+             '(and (eq (char-before) ?\s) (looking-at-p "$")))
