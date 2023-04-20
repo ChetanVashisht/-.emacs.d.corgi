@@ -229,14 +229,10 @@ to Leiningen."
 
 (use-package org
   :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)
-     (clojure . t)))
   (setq org-ellipsis "⤵")
   (setq org-edit-src-content-indentation 0)
   (setq org-startup-folded t)
+  (setq org-toggle-pretty-entities t)
   (setq-default left-margin-width 2 right-margin-width 0) ; Define new widths.
   (set-window-buffer nil (current-buffer))                ; Use them now.
   (setq org-blank-before-new-entry nil)
@@ -291,6 +287,7 @@ to Leiningen."
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files
    '("~/GTD/cooking.org" "~/GTD/articles/" "~/GTD/journal" "~/GTD/explore.org" "~/GTD/goals.org" "~/GTD/reading" "~/GTD/tasks.org" "~/GTD/software.org" "~/GTD/fitness.org" "~/GTD/appliances.org" "~/GTD/travel.org" "~/GTD/home.org" "~/GTD/hobbies.org" "~/GTD/coaching.org" "~/GTD/random.org" "~/GTD/relationships.org" "~/GTD/interviews.org"))
+ '(org-babel-load-languages '((shell . t) (emacs-lisp . t) (python . t) (clojure . t) (http . t)))
  '(org-fontify-emphasized-text t)
  '(org-fontify-whole-block-delimiter-line nil)
  '(org-journal-date-format "<%Y-%m-%d %a>")
